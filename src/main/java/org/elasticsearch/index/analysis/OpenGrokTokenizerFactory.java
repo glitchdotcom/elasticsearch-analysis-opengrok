@@ -15,6 +15,7 @@ import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.Index;
 import org.opensolaris.opengrok.analysis.AnalyzerGuru;
+import org.opensolaris.opengrok.analysis.JFlexTokenizer;
 
 public class OpenGrokTokenizerFactory extends AbstractTokenizerFactory {
     private static Pattern splitOnSpace = Pattern.compile(" +");
@@ -38,6 +39,11 @@ public class OpenGrokTokenizerFactory extends AbstractTokenizerFactory {
              Analyzer analyzer = AnalyzerGuru.find(filename).getAnalyzer();
              TokenStream stream = analyzer.tokenStream("full", new StringReader(contents))
         ) {
+            if (stream instanceof JFlexTokenizer) {
+                JFlexTokenizer jflex = (JFlexTokenizer)stream;
+                jflex.reInit(contents.toCharArray(), contents.length());
+            }
+
             // Tokenizer is an abstract class that generates tokens from a
             // Reader but all I have is a TokenStream. Conscripting
             // PatternTokenizer *seems* like the the easiest way to do
