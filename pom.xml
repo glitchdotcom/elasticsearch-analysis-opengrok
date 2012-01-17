@@ -14,5 +14,11 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.opensolaris.opengrok</groupId>
+      <artifactId>opengrok</artifactId>
+      <version>0.10</version>
+    </dependency>
   </dependencies>
 </project>
