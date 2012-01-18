@@ -26,11 +26,14 @@ import org.elasticsearch.index.settings.IndexSettingsModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisModule;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class OpenGrokTokenizerFactoryTests {
-    @Test
-    public void test() {
+    private static TokenizerFactory factory;
+
+    @BeforeClass
+    public static void setUpClass() {
         // This code is based off of:
         // https://github.com/elasticsearch/elasticsearch-analysis-smartcn/blob/master/src/test/java/org/elasticsearch/index/analysis/SimpleSmartChineseAnalysisTests.java
         Index index = new Index("test");
@@ -48,12 +51,23 @@ public class OpenGrokTokenizerFactoryTests {
 
         AnalysisService analysisService = injector.getInstance(AnalysisService.class);
 
-        TokenizerFactory factory = analysisService.tokenizer("opengrok");
+        factory = analysisService.tokenizer("opengrok");
         Assert.assertTrue(factory instanceof OpenGrokTokenizerFactory);
+    }
 
+    @Test
+    public void testC() {
         Tokenizer tokenizer = factory.create(new StringReader("a.c:/* my first function */int main(void) { printf(\"hello world\"); return 5 - 5; }"));
         ArrayList<String> tokens = readTokens(tokenizer);
         List<String> expected1 = Arrays.asList("my first function int main void printf hello world return 5 - 5".split(" "));
+        Assert.assertEquals(expected1, tokens);
+    }
+
+    @Test
+    public void testUnicode() {
+        Tokenizer tokenizer = factory.create(new StringReader("a.c:abcdéfghi"));
+        ArrayList<String> tokens = readTokens(tokenizer);
+        List<String> expected1 = Arrays.asList("abcd fghi".split(" "));
         Assert.assertEquals(expected1, tokens);
     }
 
