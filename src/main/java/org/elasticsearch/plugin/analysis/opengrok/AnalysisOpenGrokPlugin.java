@@ -1,6 +1,5 @@
 package org.elasticsearch.plugin.analysis.opengrok;
 
-import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.OpenGrokAnalysisBinderProcessor;
 import org.elasticsearch.plugins.AbstractPlugin;
@@ -16,11 +15,7 @@ public class AnalysisOpenGrokPlugin extends AbstractPlugin {
         return "Provides OpenGrok as a tokenizer";
     }
 
-    @Override
-    public void processModule(Module module) {
-        if (module instanceof AnalysisModule) {
-            AnalysisModule analysisModule = (AnalysisModule) module;
-            analysisModule.addProcessor(new OpenGrokAnalysisBinderProcessor());
-        }
+    public void onModule(AnalysisModule module) {
+        module.addProcessor(new OpenGrokAnalysisBinderProcessor());
     }
 }
