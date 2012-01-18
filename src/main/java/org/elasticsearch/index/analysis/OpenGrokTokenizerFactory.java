@@ -35,23 +35,21 @@ public class OpenGrokTokenizerFactory extends AbstractTokenizerFactory {
         String filename = parts[0];
         String contents = parts[1];
 
-        try (
-             Analyzer analyzer = AnalyzerGuru.find(filename).getAnalyzer();
-             TokenStream stream = analyzer.tokenStream("full", new StringReader(contents))
-        ) {
-            if (stream instanceof JFlexTokenizer) {
-                JFlexTokenizer jflex = (JFlexTokenizer)stream;
-                jflex.reInit(contents.toCharArray(), contents.length());
-            }
+        Analyzer analyzer = AnalyzerGuru.find(filename).getAnalyzer();
+        TokenStream stream = analyzer.tokenStream("full", new StringReader(contents));
+        if (stream instanceof JFlexTokenizer) {
+            JFlexTokenizer jflex = (JFlexTokenizer)stream;
+            jflex.reInit(contents.toCharArray(), contents.length());
+        }
 
-            // Tokenizer is an abstract class that generates tokens from a
-            // Reader but all I have is a TokenStream. Conscripting
-            // PatternTokenizer *seems* like the the easiest way to do
-            // things. Since we know text is at most ~10  KB, there's no
-            // problem if we do everything in memory.
-            String tokens = convertTokenStream(stream);
+        // Tokenizer is an abstract class that generates tokens from a
+        // Reader but all I have is a TokenStream. Conscripting
+        // PatternTokenizer *seems* like the the easiest way to do
+        // things. Since we know text is at most ~10  KB, there's no
+        // problem if we do everything in memory.
+        String tokens = convertTokenStream(stream);
+        try {
             return new PatternTokenizer(new StringReader(tokens), splitOnSpace, -1);
-
         } catch (IOException e) {
             throw new Error("Impossible", e);
         }
