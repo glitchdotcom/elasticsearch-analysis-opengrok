@@ -16,7 +16,7 @@
   </scm>
 
   <properties>
-    <elasticsearch.version>0.18.6</elasticsearch.version>
+    <elasticsearch.version>6.8.15</elasticsearch.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
